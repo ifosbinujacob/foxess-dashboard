@@ -319,34 +319,42 @@ function renderCalibration(d) {
 }
 
 function renderForecast(d) {
-  const rows = d.forecast.map(f => `
+  const rows = d.forecast.map(f => {
+    const earn = f.max_earn_if_full ?? f.window_earn ?? 0;
+    const pv   = f.pv_window_kwh   ?? f.window_kwh  ?? 0;
+    return `
     <div class="fc-row">
       <div class="fc-day">${f.label}</div>
       <div class="fc-cond">${f.condition}</div>
       <div class="fc-num">${fmt(f.solar_kwh)}k</div>
-      <div class="fc-num c-amber">${fmt(f.window_kwh)}k</div>
-      <div class="fc-num c-green">${dollar(f.window_earn)}</div>
-    </div>`).join('');
+      <div class="fc-num c-amber" title="Solar PV during 5:30-7:30 PM only (sunset ~5:45 PM in Apr)">+${fmt(pv,2)}k</div>
+      <div class="fc-num c-green">${dollar(earn)}</div>
+    </div>`}).join('');
 
-  const totalSolar  = d.forecast.reduce((s,f)=>s+f.solar_kwh,0);
-  const totalEarn   = d.forecast.reduce((s,f)=>s+f.window_earn,0);
+  const totalSolar = d.forecast.reduce((s,f)=>s+f.solar_kwh,0);
+  const totalEarn  = d.forecast.reduce((s,f)=>s+(f.max_earn_if_full??f.window_earn??0),0);
 
   return `
   <div class="card col-full">
-    <div class="card-title">7-Day Forecast</div>
+    <div class="card-title">7-Day Forecast  <span style="font-size:10px;color:var(--muted);font-weight:400;text-transform:none">Earn = battery (full) + PV. Max $9.00/day.</span></div>
     <div class="fc-row fc-head" style="padding-bottom:4px">
       <div></div><div></div>
       <div class="fc-num">Solar</div>
-      <div class="fc-num">Window</div>
-      <div class="fc-num">Earn</div>
+      <div class="fc-num">PV bonus</div>
+      <div class="fc-num">Max earn</div>
     </div>
     ${rows}
     <div class="fc-row" style="font-weight:700; border-top:1px solid var(--accent); margin-top:4px; padding-top:8px">
-      <div class="fc-day">Total</div>
+      <div class="fc-day">7-day</div>
       <div></div>
       <div class="fc-num">${fmt(totalSolar)}k</div>
       <div class="fc-num c-amber"></div>
       <div class="fc-num c-green">${dollar(totalEarn)}</div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6">
+      🔋 Battery export = up to 20 kWh ($9.00) when fully charged by 5:30 PM<br>
+      ☀️ PV bonus = solar during window (small in Apr — sunset ~5:45 PM)<br>
+      📊 Actual earn depends on real SOC at 5:30 PM (see evening report)
     </div>
   </div>`;
 }
