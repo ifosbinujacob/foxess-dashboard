@@ -474,6 +474,57 @@ data_out = {
         "days": len(fin["history"]),
     },
     "season": season[2],
+
+    # ── Historical data (last 60 days) for charts ─────────────────────────────
+    "history": {
+        # Daily financials — earn, grid cost, net, solar generation
+        "daily": [
+            {
+                "date":     e["date"],
+                "earn":     round(e.get("earn", 0), 2),
+                "cost":     round(e.get("cost", 0), 2),
+                "net":      round(e.get("earn", 0) - e.get("cost", 0), 2),
+                "gen_kwh":  round(e.get("gen_kwh", 0), 1),
+                "feedin_kwh": round(e.get("feedin_kwh", 0), 2),
+            }
+            for e in fin["history"][-60:]
+        ],
+
+        # Monthly rollups — group daily history by YYYY-MM
+        "monthly": (lambda rows: [
+            {
+                "month":    m,
+                "earn":     round(sum(r["earn"] for r in rows if r["date"][:7] == m), 2),
+                "cost":     round(sum(r["cost"] for r in rows if r["date"][:7] == m), 2),
+                "net":      round(sum(r["earn"] - r["cost"] for r in rows if r["date"][:7] == m), 2),
+                "gen_kwh":  round(sum(r["gen_kwh"] for r in rows if r["date"][:7] == m), 1),
+                "days":     sum(1 for r in rows if r["date"][:7] == m),
+            }
+            for m in sorted(set(r["date"][:7] for r in rows))
+        ])(fin["history"][-60:]),
+
+        # Overnight consumption — spot heater/AC spikes
+        "overnight": [
+            {
+                "date":            e["date"],
+                "consumption_kwh": round(e.get("consumption_kwh", 0), 2),
+                "grid_used_kwh":   round(e.get("grid_used_kwh", 0), 2),
+                "grid_free":       e.get("grid_used_kwh", 0) <= 0.1,
+            }
+            for e in overnight_h["history"][-60:]
+        ],
+
+        # Weather calibration accuracy
+        "calibration": [
+            {
+                "date":           e["date"],
+                "model_pred_kwh": round(e.get("model_pred_kwh", 0), 1),
+                "actual_kwh":     round(e.get("actual_kwh", 0), 1),
+                "factor":         round(e.get("factor", 1.0), 3),
+            }
+            for e in cal_state["history"][-30:]
+        ],
+    },
 }
 json.dump(data_out, open(DATA_FILE, "w"), indent=2)
 print(f"✅  data.json written — {run_type} run — SOC {current_soc:.0f}% — "
