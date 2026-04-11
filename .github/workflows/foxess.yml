@@ -1,0 +1,41 @@
+name: Fox ESS Solar Dashboard
+
+on:
+  schedule:
+    # 7 AM AEST/AEDT Sydney — runs at 20:00 UTC (AEDT = UTC+11, so 7AM = 8PM UTC prev day)
+    - cron: "0 20 * * *"
+    # 5 PM AEST/AEDT Sydney — runs at 06:00 UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:   # allows manual "Run workflow" button on GitHub
+
+permissions:
+  contents: write      # needed to commit data.json + state.json back to repo
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Run Fox ESS data generator
+        env:
+          FOXESS_API_KEY: ${{ secrets.FOXESS_API_KEY }}
+          FOXESS_SN: ${{ secrets.FOXESS_SN }}
+        run: python generate.py
+
+      - name: Commit updated data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data.json state.json
+          git diff --staged --quiet || git commit -m "📊 Update solar data [skip ci]"
+          git push
