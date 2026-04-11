@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-04-11T20:17:36.960154+10:00",
+  "generated_at": "2026-04-11T20:32:50.284635+10:00",
   "run_type": "evening",
   "soc": {
     "pct": 49.0,
     "kwh": 20.6,
     "source": "live",
     "live_pv_kw": 0.0,
-    "live_load_kw": 0.37,
-    "live_bat_kw": -0.45
+    "live_load_kw": 2.29,
+    "live_bat_kw": -2.35
   },
   "export": {
     "headroom_kwh": 12.6,
-    "reserve_kwh": 8.0,
+    "reserve_kwh": 6.0,
     "est_export_kwh": 12.6,
     "est_earn": 5.67,
     "fdpwr_w": 6300,
@@ -152,10 +152,76 @@
     }
   ],
   "financials": {
-    "total_earned": 16.36,
-    "total_grid_cost": 0.06,
-    "net": 16.3,
-    "days": 2
+    "total_earned": 24.54,
+    "total_grid_cost": 0.09,
+    "net": 24.45,
+    "days": 3
   },
-  "season": "Autumn"
+  "season": "Autumn",
+  "history": {
+    "daily": [
+      {
+        "date": "2026-04-10",
+        "earn": 8.18,
+        "cost": 0.03,
+        "net": 8.15,
+        "gen_kwh": 30.6,
+        "feedin_kwh": 18.17
+      },
+      {
+        "date": "2026-04-10",
+        "earn": 8.18,
+        "cost": 0.03,
+        "net": 8.15,
+        "gen_kwh": 30.6,
+        "feedin_kwh": 18.17
+      },
+      {
+        "date": "2026-04-10",
+        "earn": 8.18,
+        "cost": 0.03,
+        "net": 8.15,
+        "gen_kwh": 30.6,
+        "feedin_kwh": 18.17
+      }
+    ],
+    "monthly": [
+      {
+        "month": "2026-04",
+        "earn": 24.54,
+        "cost": 0.09,
+        "net": 24.45,
+        "gen_kwh": 91.9,
+        "days": 3
+      }
+    ],
+    "overnight": [
+      {
+        "date": "2026-04-10",
+        "consumption_kwh": 3.3,
+        "grid_used_kwh": 0.0,
+        "grid_free": true
+      },
+      {
+        "date": "2026-04-10",
+        "consumption_kwh": 3.3,
+        "grid_used_kwh": 0.0,
+        "grid_free": true
+      },
+      {
+        "date": "2026-04-10",
+        "consumption_kwh": 3.3,
+        "grid_used_kwh": 0.0,
+        "grid_free": true
+      }
+    ],
+    "calibration": [
+      {
+        "date": "2026-04-11",
+        "model_pred_kwh": 54.5,
+        "actual_kwh": 46.3,
+        "factor": 0.85
+      }
+    ]
+  }
 }
