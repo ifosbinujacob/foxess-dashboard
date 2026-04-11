@@ -621,7 +621,9 @@ async function loadData() {
     if (!r.ok) throw new Error(`HTTP ${r.status} — data.json not found yet. Try running the workflow first.`);
     const d = await r.json();
     render(d);
+    if (d.history) { renderHistory(d); renderMonthly(d); }
     document.getElementById('loading').style.display = 'none';
+    document.getElementById('tabs').style.display    = 'flex';
     document.getElementById('content').style.display = 'block';
   } catch(e) {
     document.getElementById('loading').style.display = 'none';
