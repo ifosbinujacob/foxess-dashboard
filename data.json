@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-04-11T00:00:00+11:00",
+  "run_type": "morning",
+  "soc": {
+    "pct": 0,
+    "kwh": 0,
+    "source": "pending",
+    "live_pv_kw": 0,
+    "live_load_kw": 0,
+    "live_bat_kw": 0
+  },
+  "export": {
+    "headroom_kwh": 0,
+    "reserve_kwh": 8,
+    "est_export_kwh": 0,
+    "est_earn": 0,
+    "fdpwr_w": 0,
+    "bat_after_pct": 0,
+    "bat_after_kwh": 0,
+    "pv_bonus_kwh": 0,
+    "upside_earn": 0
+  },
+  "yesterday": {
+    "date": "\u2014",
+    "gen_kwh": 0,
+    "load_kwh": 0,
+    "grid_kwh": 0,
+    "feedin_kwh": 0,
+    "earn": 0,
+    "cost": 0,
+    "net": 0,
+    "self_suff_pct": 0
+  },
+  "today": {
+    "date": "\u2014",
+    "gen_kwh_so_far": 0
+  },
+  "overnight": {
+    "load_kwh": 0,
+    "grid_kwh": 0,
+    "grid_free": true
+  },
+  "calibration": {
+    "factor": 1.0,
+    "days": 0,
+    "note": "First run pending"
+  },
+  "bom": {
+    "today_icon": "\u2014",
+    "today_uv": "\u2014",
+    "tmrw_icon": "\u2014",
+    "tmrw_rain": "\u2014"
+  },
+  "forecast": [],
+  "financials": {
+    "total_earned": 0,
+    "total_grid_cost": 0,
+    "net": 0,
+    "days": 0
+  },
+  "season": "Autumn"
+}
