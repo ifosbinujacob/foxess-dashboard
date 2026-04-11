@@ -329,10 +329,23 @@ for i in range(1, 8):
     else:                 cond = "☁️ Overcast"
     if peak_rain > 60:    cond += " 🌧"
 
+    # Max earn = battery (assuming full charge) + PV bonus, capped at 20 kWh
+    # In April, sunset ~17:45 so PV contribution during window is minimal (~1-2 kWh)
+    # Battery is the main export source: 42 kWh - reserve = up to 20 kWh @ 10 kW
+    _reserve       = state.get("recommended_reserve_kwh", 8.0)
+    _max_headroom  = max(0, CAPACITY_KWH - _reserve)          # e.g. 34 kWh
+    _max_bat_kw    = min(MAX_DISCHARGE_KW, _max_headroom / WINDOW_H)
+    _max_bat_kwh   = _max_bat_kw * WINDOW_H                   # e.g. 20 kWh (capped at 10kW×2h)
+    _total_if_full = min(MAX_EXPORT_KWH, _max_bat_kwh + window)
+    max_earn_if_full = round(_total_if_full * FEEDIN_RATE, 2)
+    bat_earn_if_full = round(_max_bat_kwh * FEEDIN_RATE, 2)
+
     forecast_list.append({
         "date": ds, "label": day_label, "condition": cond,
-        "solar_kwh": solar, "window_kwh": window,
-        "window_earn": round(window * FEEDIN_RATE, 2),
+        "solar_kwh": solar,
+        "pv_window_kwh": window,          # solar PV only during 17:30-19:30
+        "bat_earn_if_full": bat_earn_if_full,   # battery export earn (if fully charged)
+        "max_earn_if_full": max_earn_if_full,   # total earn battery+PV (if fully charged)
         "cloud_pct": avg_cloud, "rain_pct": peak_rain,
         "uv": uv, "sunset": sunset_s, "source": source
     })
