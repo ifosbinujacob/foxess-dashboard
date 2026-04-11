@@ -1,0 +1,31 @@
+{
+  "weather_calibration": {
+    "history": [],
+    "rolling_factor": 1.0
+  },
+  "today_icon_pred_kwh": 54.5,
+  "overnight": {
+    "history": [
+      {
+        "date": "2026-04-10",
+        "month": 4,
+        "consumption_kwh": 3.3,
+        "grid_used_kwh": 0.0
+      }
+    ],
+    "safety_margin_kwh": 1.5
+  },
+  "financials": {
+    "total_earned": 8.18,
+    "total_grid_cost": 0.03,
+    "history": [
+      {
+        "date": "2026-04-10",
+        "earn": 8.18,
+        "cost": 0.03,
+        "gen_kwh": 30.63,
+        "feedin_kwh": 18.17
+      }
+    ]
+  }
+}
