@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a2e">
+<title>⚡ Fox ESS Dashboard</title>
+<style>
+  :root {
+    --bg:      #0f0f1a;
+    --card:    #1a1a2e;
+    --card2:   #16213e;
+    --accent:  #f0a500;
+    --green:   #00d084;
+    --red:     #ff4757;
+    --blue:    #4ecdc4;
+    --text:    #e8e8f0;
+    --muted:   #8888aa;
+    --border:  #2a2a4a;
+    --radius:  14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px; min-height: 100vh; padding-bottom: 24px;
+  }
+
+  /* ── header ── */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 20px 16px 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-start;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .header .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .refresh-btn {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 6px 12px; font-size: 13px; cursor: pointer;
+  }
+  .refresh-btn:active { opacity: 0.7; }
+
+  /* ── grid layout ── */
+  .grid { padding: 12px; display: grid; gap: 10px;
+          grid-template-columns: 1fr 1fr; }
+  .col-full { grid-column: 1 / -1; }
+
+  /* ── cards ── */
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 14px; overflow: hidden;
+  }
+  .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+                color: var(--muted); margin-bottom: 8px; }
+  .big-num { font-size: 38px; font-weight: 700; line-height: 1; }
+  .big-unit { font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .label { font-size: 12px; color: var(--muted); }
+  .value { font-size: 15px; font-weight: 600; }
+
+  /* ── SOC bar ── */
+  .soc-bar-wrap { margin: 10px 0 6px;
+    background: var(--border); border-radius: 999px; height: 10px; overflow: hidden; }
+  .soc-bar { height: 100%; border-radius: 999px; transition: width 0.6s ease;
+    background: linear-gradient(90deg, #00d084, #f0a500); }
+
+  /* ── pill badges ── */
+  .pill {
+    display: inline-block; padding: 3px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; margin: 2px 2px 0 0;
+  }
+  .pill-green { background: rgba(0,208,132,0.15); color: var(--green); }
+  .pill-amber { background: rgba(240,165,0,0.15);  color: var(--accent); }
+  .pill-red   { background: rgba(255,71,87,0.15);  color: var(--red); }
+  .pill-blue  { background: rgba(78,205,196,0.15); color: var(--blue); }
+
+  /* ── row pairs ── */
+  .row { display: flex; justify-content: space-between; align-items: center;
+         padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .row:last-child { border-bottom: none; }
+
+  /* ── export action card ── */
+  .action-card {
+    background: linear-gradient(135deg, #1a2a1a 0%, #0f1a0f 100%);
+    border: 1px solid #2a4a2a;
+  }
+  .fdpwr { font-size: 28px; font-weight: 800; color: var(--green); }
+  .fdpwr-unit { font-size: 13px; color: var(--muted); }
+
+  /* ── forecast table ── */
+  .fc-row {
+    display: grid; grid-template-columns: 80px 1fr 52px 52px 52px;
+    gap: 4px; align-items: center;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .fc-row:last-child { border-bottom: none; }
+  .fc-day { font-weight: 600; font-size: 12px; }
+  .fc-cond { font-size: 12px; color: var(--muted); white-space: nowrap;
+             overflow: hidden; text-overflow: ellipsis; }
+  .fc-num { text-align: right; }
+  .fc-head { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+
+  /* ── live indicator ── */
+  .live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); margin-right: 5px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── divider ── */
+  .divider { height: 1px; background: var(--border); margin: 4px 0 8px; }
+
+  /* ── color helpers ── */
+  .c-green { color: var(--green); }
+  .c-amber { color: var(--accent); }
+  .c-red   { color: var(--red); }
+  .c-blue  { color: var(--blue); }
+  .c-muted { color: var(--muted); }
+
+  /* ── loading / error ── */
+  #loading { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 16px; }
+  #error   { text-align: center; padding: 40px 20px; color: var(--red); }
+
+  /* ── footer ── */
+  .footer { text-align: center; font-size: 11px; color: var(--muted); padding: 8px 16px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>⚡ Fox ESS Dashboard</h1>
+    <div class="sub" id="updated-at">Loading…</div>
+  </div>
+  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+</div>
+
+<div id="loading">Loading solar data…</div>
+<div id="error" style="display:none"></div>
+<div id="content" style="display:none"></div>
+
+<script>
+const DATA_URL = "data.json";
+
+function fmt(n, dec=1) { return (n??0).toFixed(dec); }
+function pct(n) { return Math.round(n??0) + "%"; }
+function dollar(n) { return "$" + fmt(n,2); }
+
+function socColor(pct) {
+  if (pct >= 80) return "var(--green)";
+  if (pct >= 40) return "var(--accent)";
+  return "var(--red)";
+}
+
+function renderSoc(d) {
+  const s = d.soc;
+  const col = socColor(s.pct);
+  return `
+  <div class="card">
+    <div class="card-title"><span class="live-dot"></span>Battery</div>
+    <div class="big-num" style="color:${col}">${fmt(s.pct,0)}<span style="font-size:20px">%</span></div>
+    <div class="big-unit">${fmt(s.kwh,1)} kWh of 42 kWh</div>
+    <div class="soc-bar-wrap">
+      <div class="soc-bar" style="width:${s.pct}%; background: linear-gradient(90deg,${col},${col}88)"></div>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px">
+      <span class="pill ${s.live_pv_kw>0.1?'pill-amber':'pill-blue'}">☀️ ${fmt(s.live_pv_kw)} kW</span>
+      <span class="pill pill-blue">🏠 ${fmt(s.live_load_kw)} kW</span>
+      <span class="pill ${s.live_bat_kw>0?'pill-green':'pill-amber'}">${s.live_bat_kw>=0?'⬆':'⬇'} ${fmt(Math.abs(s.live_bat_kw))} kW</span>
+    </div>
+  </div>`;
+}
+
+function renderToday(d) {
+  return `
+  <div class="card">
+    <div class="card-title">Today</div>
+    <div class="big-num c-amber">${fmt(d.today.gen_kwh_so_far)}</div>
+    <div class="big-unit">kWh solar so far</div>
+    <div class="divider"></div>
+    <div class="row">
+      <span class="label">Overnight load</span>
+      <span class="value">${fmt(d.overnight.load_kwh)} kWh</span>
+    </div>
+    <div class="row">
+      <span class="label">Grid overnight</span>
+      <span class="value ${d.overnight.grid_free?'c-green':'c-red'}">
+        ${d.overnight.grid_free ? '✅ Free' : fmt(d.overnight.grid_kwh)+' kWh'}
+      </span>
+    </div>
+    <div class="row">
+      <span class="label">Season</span>
+      <span class="value c-muted">${d.season}</span>
+    </div>
+  </div>`;
+}
+
+function renderExport(d) {
+  const e = d.export;
+  const hasExport = e.est_export_kwh > 0.5;
+  return `
+  <div class="card action-card col-full">
+    <div class="card-title">⚡ Export Window  17:30 – 19:30</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px">
+      <div>
+        <div class="label">Set ForceDischarge to</div>
+        <div class="fdpwr">${e.fdpwr_w}<span class="fdpwr-unit"> W</span></div>
+        <div class="label" style="margin-top:4px">Fox ESS app → Mode Scheduler</div>
+      </div>
+      <div>
+        <div class="label">Battery export</div>
+        <div style="font-size:22px; font-weight:700; color:var(--green)">${fmt(e.est_export_kwh)} kWh</div>
+        <div style="font-size:20px; font-weight:700; color:var(--accent)">${dollar(e.est_earn)}</div>
+        <div class="label">upside with PV → ${dollar(e.upside_earn)}</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <span class="label">Available headroom</span>
+      <span class="value">${fmt(e.headroom_kwh)} kWh</span>
+    </div>
+    <div class="row">
+      <span class="label">Reserve tonight</span>
+      <span class="value">${fmt(e.reserve_kwh)} kWh</span>
+    </div>
+    <div class="row">
+      <span class="label">Battery after window</span>
+      <span class="value">${e.bat_after_pct}% = ${fmt(e.bat_after_kwh)} kWh</span>
+    </div>
+    ${e.pv_bonus_kwh > 0.1 ? `<div class="row">
+      <span class="label">PV bonus (window)</span>
+      <span class="value c-amber">+${fmt(e.pv_bonus_kwh)} kWh</span>
+    </div>` : ''}
+  </div>`;
+}
+
+function renderYesterday(d) {
+  const y = d.yesterday;
+  const netColor = y.net >= 0 ? 'c-green' : 'c-red';
+  return `
+  <div class="card col-full">
+    <div class="card-title">Yesterday  ${y.date}</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; text-align:center">
+      <div>
+        <div style="font-size:22px; font-weight:700; color:var(--accent)">${fmt(y.gen_kwh)}</div>
+        <div class="label">kWh solar</div>
+      </div>
+      <div>
+        <div style="font-size:22px; font-weight:700; color:var(--green)">${dollar(y.earn)}</div>
+        <div class="label">earned</div>
+      </div>
+      <div>
+        <div style="font-size:22px; font-weight:700" class="${netColor}">${y.net>=0?'+':''}${dollar(y.net)}</div>
+        <div class="label">net</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <span class="label">Feed-in (17:30–19:30)</span>
+      <span class="value">${fmt(y.feedin_kwh)} kWh</span>
+    </div>
+    <div class="row">
+      <span class="label">Grid cost</span>
+      <span class="value c-red">-${dollar(y.cost)}</span>
+    </div>
+    <div class="row">
+      <span class="label">Self-sufficiency</span>
+      <span class="value">${pct(y.self_suff_pct)}</span>
+    </div>
+    <div class="row">
+      <span class="label">Load</span>
+      <span class="value">${fmt(y.load_kwh)} kWh</span>
+    </div>
+  </div>`;
+}
+
+function renderFinancials(d) {
+  const f = d.financials;
+  const netCol = f.net >= 0 ? 'c-green' : 'c-red';
+  return `
+  <div class="card">
+    <div class="card-title">All time (${f.days}d)</div>
+    <div class="row">
+      <span class="label">Earned</span>
+      <span class="value c-green">${dollar(f.total_earned)}</span>
+    </div>
+    <div class="row">
+      <span class="label">Grid</span>
+      <span class="value c-red">-${dollar(f.total_grid_cost)}</span>
+    </div>
+    <div class="row">
+      <span class="label">Net</span>
+      <span class="value ${netCol}">${f.net>=0?'+':''}${dollar(f.net)}</span>
+    </div>
+  </div>`;
+}
+
+function renderCalibration(d) {
+  const c = d.calibration;
+  const bom = d.bom;
+  return `
+  <div class="card">
+    <div class="card-title">Weather</div>
+    <div class="row">
+      <span class="label">Cal factor</span>
+      <span class="value">${c.factor.toFixed(2)}× (${c.days}d)</span>
+    </div>
+    <div class="row">
+      <span class="label">Today BOM</span>
+      <span class="value" style="font-size:13px">${bom.today_icon?.replace(/_/g,' ')||'?'}</span>
+    </div>
+    <div class="row">
+      <span class="label">Tomorrow</span>
+      <span class="value" style="font-size:13px">${bom.tmrw_icon?.replace(/_/g,' ')||'?'}</span>
+    </div>
+  </div>`;
+}
+
+function renderForecast(d) {
+  const rows = d.forecast.map(f => `
+    <div class="fc-row">
+      <div class="fc-day">${f.label}</div>
+      <div class="fc-cond">${f.condition}</div>
+      <div class="fc-num">${fmt(f.solar_kwh)}k</div>
+      <div class="fc-num c-amber">${fmt(f.window_kwh)}k</div>
+      <div class="fc-num c-green">${dollar(f.window_earn)}</div>
+    </div>`).join('');
+
+  const totalSolar  = d.forecast.reduce((s,f)=>s+f.solar_kwh,0);
+  const totalEarn   = d.forecast.reduce((s,f)=>s+f.window_earn,0);
+
+  return `
+  <div class="card col-full">
+    <div class="card-title">7-Day Forecast</div>
+    <div class="fc-row fc-head" style="padding-bottom:4px">
+      <div></div><div></div>
+      <div class="fc-num">Solar</div>
+      <div class="fc-num">Window</div>
+      <div class="fc-num">Earn</div>
+    </div>
+    ${rows}
+    <div class="fc-row" style="font-weight:700; border-top:1px solid var(--accent); margin-top:4px; padding-top:8px">
+      <div class="fc-day">Total</div>
+      <div></div>
+      <div class="fc-num">${fmt(totalSolar)}k</div>
+      <div class="fc-num c-amber"></div>
+      <div class="fc-num c-green">${dollar(totalEarn)}</div>
+    </div>
+  </div>`;
+}
+
+function render(d) {
+  const at = new Date(d.generated_at);
+  const fmt_time = at.toLocaleString('en-AU', {timeZone:'Australia/Sydney',
+    month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+
+  document.getElementById('updated-at').textContent =
+    `${d.run_type === 'morning' ? '🌅 Morning' : '🌆 Evening'} run · ${fmt_time}`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="grid">
+      ${renderSoc(d)}
+      ${renderToday(d)}
+      ${renderExport(d)}
+      ${renderYesterday(d)}
+      ${renderFinancials(d)}
+      ${renderCalibration(d)}
+      ${renderForecast(d)}
+    </div>
+    <div class="footer">Schofields, Sydney · 12.96 kWp · 42 kWh battery · Feed-in $0.45/kWh</div>
+  `;
+}
+
+async function loadData() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('error').style.display   = 'none';
+  document.getElementById('content').style.display = 'none';
+  try {
+    const r = await fetch(DATA_URL + "?t=" + Date.now());
+    if (!r.ok) throw new Error(`HTTP ${r.status} — data.json not found yet. Try running the workflow first.`);
+    const d = await r.json();
+    render(d);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').style.display   = 'block';
+    document.getElementById('error').innerHTML =
+      `<b>Could not load data</b><br><small>${e.message}</small>`;
+  }
+}
+
+loadData();
+// Auto-refresh every 10 minutes
+setInterval(loadData, 10 * 60 * 1000);
+</script>
+</body>
+</html>
