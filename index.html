@@ -123,6 +123,25 @@
   #loading { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 16px; }
   #error   { text-align: center; padding: 40px 20px; color: var(--red); }
 
+  /* ── tabs ── */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border);
+          padding: 0 12px; margin-bottom: 0; background: var(--card); }
+  .tab  { padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+          color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── charts ── */
+  .chart-wrap { position: relative; height: 180px; }
+
+  /* ── history table ── */
+  .hist-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .hist-table th { color: var(--muted); font-weight: 600; text-align: right;
+                   padding: 4px 6px; border-bottom: 1px solid var(--border); font-size: 11px; }
+  .hist-table th:first-child { text-align: left; }
+  .hist-table td { padding: 5px 6px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .hist-table td:first-child { text-align: left; color: var(--muted); }
+  .hist-table tr:last-child td { border-bottom: none; }
+
   /* ── footer ── */
   .footer { text-align: center; font-size: 11px; color: var(--muted); padding: 8px 16px 0; }
 </style>
@@ -137,12 +156,31 @@
   <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
 </div>
 
+<div class="tabs" id="tabs" style="display:none">
+  <div class="tab active" onclick="switchTab('live')">Live</div>
+  <div class="tab" onclick="switchTab('history')">History</div>
+  <div class="tab" onclick="switchTab('monthly')">Monthly</div>
+</div>
 <div id="loading">Loading solar data…</div>
 <div id="error" style="display:none"></div>
 <div id="content" style="display:none"></div>
+<div id="content-history" style="display:none"></div>
+<div id="content-monthly" style="display:none"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 const DATA_URL = "data.json";
+let _charts = {};
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab')[['live','history','monthly'].indexOf(name)].classList.add('active');
+  document.getElementById('content').style.display         = name==='live'    ? 'block' : 'none';
+  document.getElementById('content-history').style.display = name==='history' ? 'block' : 'none';
+  document.getElementById('content-monthly').style.display = name==='monthly' ? 'block' : 'none';
+  // Resize charts after tab switch so they render correctly
+  setTimeout(()=>Object.values(_charts).forEach(c=>c.resize()), 50);
+}
 
 function fmt(n, dec=1) { return (n??0).toFixed(dec); }
 function pct(n) { return Math.round(n??0) + "%"; }
@@ -379,6 +417,199 @@ function render(d) {
     </div>
     <div class="footer">Schofields, Sydney · 12.96 kWp · 42 kWh battery · Feed-in $0.45/kWh</div>
   `;
+}
+
+function mkChart(id, config) {
+  if (_charts[id]) { _charts[id].destroy(); delete _charts[id]; }
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  _charts[id] = new Chart(ctx, config);
+}
+
+function renderHistory(d) {
+  const hist = d.history;
+  if (!hist || !hist.daily || hist.daily.length === 0) {
+    document.getElementById('content-history').innerHTML =
+      '<div style="padding:40px;text-align:center;color:var(--muted)">No history yet — data accumulates after a few days of runs.</div>';
+    return;
+  }
+
+  const daily   = hist.daily.slice(-30);  // last 30 days
+  const ovnight = (hist.overnight || []).slice(-30);
+  const calHist = (hist.calibration || []).slice(-30);
+  const labels  = daily.map(e => e.date.slice(5));  // MM-DD
+
+  document.getElementById('content-history').innerHTML = `
+    <div class="grid">
+      <div class="card col-full">
+        <div class="card-title">Daily Earnings vs Grid Cost (last ${daily.length} days)</div>
+        <div class="chart-wrap"><canvas id="ch-earn"></canvas></div>
+      </div>
+      <div class="card col-full">
+        <div class="card-title">Daily Solar Generation (last ${daily.length} days)</div>
+        <div class="chart-wrap"><canvas id="ch-solar"></canvas></div>
+      </div>
+      <div class="card col-full">
+        <div class="card-title">Overnight Consumption (last ${ovnight.length} days)</div>
+        <div class="chart-wrap"><canvas id="ch-overnight"></canvas></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">Spikes = heater / AC usage</div>
+      </div>
+      ${calHist.length > 2 ? `
+      <div class="card col-full">
+        <div class="card-title">Weather Model Accuracy — Actual vs Predicted (last ${calHist.length} days)</div>
+        <div class="chart-wrap"><canvas id="ch-cal"></canvas></div>
+      </div>` : ''}
+    </div>`;
+
+  const gridColor = 'rgba(255,255,255,0.06)';
+  const tickColor = '#8888aa';
+  const baseOpts  = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: tickColor, boxWidth: 12, font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: tickColor, maxTicksLimit: 10, font: { size: 10 } },
+           grid: { color: gridColor } },
+      y: { ticks: { color: tickColor, font: { size: 10 } }, grid: { color: gridColor } }
+    }
+  };
+
+  // Earnings chart
+  mkChart('ch-earn', { type: 'bar', data: {
+    labels,
+    datasets: [
+      { label: 'Earned $',    data: daily.map(e=>e.earn),
+        backgroundColor: 'rgba(0,208,132,0.7)', borderRadius: 3 },
+      { label: 'Grid cost $', data: daily.map(e=>e.cost),
+        backgroundColor: 'rgba(255,71,87,0.6)',  borderRadius: 3 },
+      { label: 'Net $',       data: daily.map(e=>e.net),
+        type: 'line', borderColor: '#f0a500', backgroundColor: 'transparent',
+        pointRadius: 2, tension: 0.3, borderWidth: 2 },
+    ]
+  }, options: { ...baseOpts, scales: { ...baseOpts.scales,
+    y: { ...baseOpts.scales.y, ticks: { ...baseOpts.scales.y.ticks,
+      callback: v => '$'+v.toFixed(2) } } } }
+  });
+
+  // Solar chart
+  mkChart('ch-solar', { type: 'bar', data: {
+    labels,
+    datasets: [
+      { label: 'Solar kWh',  data: daily.map(e=>e.gen_kwh),
+        backgroundColor: 'rgba(240,165,0,0.7)', borderRadius: 3 },
+      { label: 'Feed-in kWh', data: daily.map(e=>e.feedin_kwh),
+        backgroundColor: 'rgba(78,205,196,0.6)', borderRadius: 3 },
+    ]
+  }, options: { ...baseOpts, scales: { ...baseOpts.scales,
+    y: { ...baseOpts.scales.y, ticks: { ...baseOpts.scales.y.ticks,
+      callback: v => v+'k' } } } }
+  });
+
+  // Overnight chart
+  if (ovnight.length > 0) {
+    const onLabels = ovnight.map(e => e.date.slice(5));
+    mkChart('ch-overnight', { type: 'bar', data: {
+      labels: onLabels,
+      datasets: [
+        { label: 'Battery kWh', data: ovnight.map(e => Math.max(0, e.consumption_kwh - e.grid_used_kwh)),
+          backgroundColor: 'rgba(78,205,196,0.7)', borderRadius: 3 },
+        { label: 'Grid kWh',    data: ovnight.map(e => e.grid_used_kwh),
+          backgroundColor: 'rgba(255,71,87,0.7)',  borderRadius: 3 },
+      ]
+    }, options: { ...baseOpts, scales: {
+      x: baseOpts.scales.x,
+      y: { ...baseOpts.scales.y, stacked: false,
+           ticks: { ...baseOpts.scales.y.ticks, callback: v => v+'k' } }
+    } }
+    });
+  }
+
+  // Calibration chart
+  if (calHist.length > 2) {
+    const calLabels = calHist.map(e => e.date.slice(5));
+    mkChart('ch-cal', { type: 'bar', data: {
+      labels: calLabels,
+      datasets: [
+        { label: 'Model predicted kWh', data: calHist.map(e=>e.model_pred_kwh),
+          backgroundColor: 'rgba(240,165,0,0.5)', borderRadius: 3 },
+        { label: 'Actual kWh',          data: calHist.map(e=>e.actual_kwh),
+          backgroundColor: 'rgba(0,208,132,0.7)', borderRadius: 3 },
+      ]
+    }, options: baseOpts });
+  }
+}
+
+function renderMonthly(d) {
+  const hist = d.history;
+  if (!hist || !hist.monthly || hist.monthly.length === 0) {
+    document.getElementById('content-monthly').innerHTML =
+      '<div style="padding:40px;text-align:center;color:var(--muted)">No monthly data yet.</div>';
+    return;
+  }
+
+  const months = hist.monthly;
+  const rows   = months.slice().reverse().map(m => `
+    <tr>
+      <td>${m.month}</td>
+      <td>${m.days}d</td>
+      <td>${fmt(m.gen_kwh,1)} kWh</td>
+      <td class="c-green">$${fmt(m.earn,2)}</td>
+      <td class="c-red">-$${fmt(m.cost,2)}</td>
+      <td class="${m.net>=0?'c-green':'c-red'}">${m.net>=0?'+':''}$${fmt(m.net,2)}</td>
+    </tr>`).join('');
+
+  const totEarn = months.reduce((s,m)=>s+m.earn,0);
+  const totCost = months.reduce((s,m)=>s+m.cost,0);
+  const totNet  = totEarn - totCost;
+  const totGen  = months.reduce((s,m)=>s+m.gen_kwh,0);
+
+  document.getElementById('content-monthly').innerHTML = `
+    <div class="grid">
+      <div class="card col-full">
+        <div class="card-title">Monthly Summary</div>
+        <div class="chart-wrap" style="height:160px"><canvas id="ch-monthly"></canvas></div>
+      </div>
+      <div class="card col-full">
+        <div class="card-title">Monthly Breakdown</div>
+        <div style="overflow-x:auto">
+        <table class="hist-table">
+          <thead><tr>
+            <th>Month</th><th>Days</th><th>Solar</th>
+            <th>Earned</th><th>Grid</th><th>Net</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr style="font-weight:700;border-top:1px solid var(--accent)">
+            <td>Total</td><td>${months.reduce((s,m)=>s+m.days,0)}d</td>
+            <td>${fmt(totGen,1)} kWh</td>
+            <td class="c-green">$${fmt(totEarn,2)}</td>
+            <td class="c-red">-$${fmt(totCost,2)}</td>
+            <td class="${totNet>=0?'c-green':'c-red'}">${totNet>=0?'+':''}$${fmt(totNet,2)}</td>
+          </tr></tfoot>
+        </table></div>
+      </div>
+    </div>`;
+
+  const gridColor = 'rgba(255,255,255,0.06)';
+  const tickColor = '#8888aa';
+  mkChart('ch-monthly', { type: 'bar', data: {
+    labels: months.map(m=>m.month),
+    datasets: [
+      { label: 'Earned $',    data: months.map(m=>m.earn),
+        backgroundColor: 'rgba(0,208,132,0.7)', borderRadius: 4 },
+      { label: 'Grid cost $', data: months.map(m=>m.cost),
+        backgroundColor: 'rgba(255,71,87,0.6)',  borderRadius: 4 },
+      { label: 'Net $',       data: months.map(m=>m.net),
+        type: 'line', borderColor: '#f0a500', backgroundColor: 'transparent',
+        pointRadius: 3, tension: 0.3, borderWidth: 2 },
+    ]
+  }, options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: tickColor, boxWidth: 12, font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: tickColor, font: { size: 10 } }, grid: { color: gridColor } },
+      y: { ticks: { color: tickColor, font: { size: 10 }, callback: v=>'$'+v.toFixed(2) },
+           grid: { color: gridColor } }
+    }
+  }});
 }
 
 async function loadData() {
