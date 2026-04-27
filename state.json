@@ -318,13 +318,19 @@
         "month": 4,
         "consumption_kwh": 8.9,
         "grid_used_kwh": 0.3
+      },
+      {
+        "date": "2026-04-27",
+        "month": 4,
+        "consumption_kwh": 3.0,
+        "grid_used_kwh": 0.1
       }
     ],
     "safety_margin_kwh": 1.5
   },
   "financials": {
-    "total_earned": 269.7,
-    "total_grid_cost": 13.25,
+    "total_earned": 277.68,
+    "total_grid_cost": 13.35,
     "history": [
       {
         "date": "2026-04-10",
@@ -570,6 +576,13 @@
         "cost": 0.1,
         "gen_kwh": 38.03,
         "feedin_kwh": 18.06
+      },
+      {
+        "date": "2026-04-27",
+        "earn": 7.98,
+        "cost": 0.1,
+        "gen_kwh": 39.39,
+        "feedin_kwh": 17.73
       }
     ]
   },
