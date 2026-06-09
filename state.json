@@ -184,15 +184,9 @@
     ],
     "rolling_factor": 0.745
   },
-  "today_icon_pred_kwh": 29.4,
+  "today_icon_pred_kwh": 27.6,
   "overnight": {
     "history": [
-      {
-        "date": "2026-04-25",
-        "month": 4,
-        "consumption_kwh": 3.0,
-        "grid_used_kwh": 0.0
-      },
       {
         "date": "2026-04-25",
         "month": 4,
@@ -726,22 +720,21 @@
         "month": 6,
         "consumption_kwh": 6.3,
         "grid_used_kwh": 0.2
+      },
+      {
+        "date": "2026-06-09",
+        "month": 6,
+        "consumption_kwh": 9.2,
+        "grid_used_kwh": 1.7
       }
     ],
     "safety_margin_kwh": 1.5
   },
   "financials": {
-    "total_earned": 408.61,
-    "total_grid_cost": 329.32,
+    "total_earned": 411.03,
+    "total_grid_cost": 332.73,
     "history": [
       {
-        "date": "2026-05-10",
-        "earn": 5.58,
-        "cost": 1.4,
-        "gen_kwh": 30.04,
-        "feedin_kwh": 12.39
-      },
-      {
         "date": "2026-05-11",
         "earn": 7.97,
         "cost": 5.46,
@@ -1153,6 +1146,13 @@
         "cost": 9.34,
         "gen_kwh": 23.4,
         "feedin_kwh": 13.06
+      },
+      {
+        "date": "2026-06-09",
+        "earn": 8.0,
+        "cost": 4.81,
+        "gen_kwh": 23.2,
+        "feedin_kwh": 17.77
       }
     ]
   },
