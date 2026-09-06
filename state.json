@@ -194,12 +194,6 @@
         "grid_used_kwh": 7.6
       },
       {
-        "date": "2026-07-23",
-        "month": 7,
-        "consumption_kwh": 12.5,
-        "grid_used_kwh": 7.6
-      },
-      {
         "date": "2026-07-24",
         "month": 7,
         "consumption_kwh": 19.6,
@@ -726,21 +720,20 @@
         "month": 9,
         "consumption_kwh": 3.9,
         "grid_used_kwh": 0.0
+      },
+      {
+        "date": "2026-09-06",
+        "month": 9,
+        "consumption_kwh": 2.8,
+        "grid_used_kwh": 0.1
       }
     ],
     "safety_margin_kwh": 1.5
   },
   "financials": {
-    "total_earned": 220.04,
-    "total_grid_cost": 319.89,
+    "total_earned": 226.85,
+    "total_grid_cost": 312.18,
     "history": [
-      {
-        "date": "2026-08-07",
-        "earn": 0.09,
-        "cost": 7.74,
-        "gen_kwh": 33.21,
-        "feedin_kwh": 0.21
-      },
       {
         "date": "2026-08-07",
         "earn": 0.09,
@@ -1153,6 +1146,13 @@
         "cost": 1.84,
         "gen_kwh": 41.03,
         "feedin_kwh": 17.05
+      },
+      {
+        "date": "2026-09-06",
+        "earn": 6.9,
+        "cost": 0.03,
+        "gen_kwh": 46.93,
+        "feedin_kwh": 15.34
       }
     ]
   },
