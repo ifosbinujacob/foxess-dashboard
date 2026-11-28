@@ -1,95 +1,81 @@
 {
-  "generated_at": "2026-11-28T13:30:01.348437+11:00",
-  "run_type": "evening",
+  "generated_at": "2026-11-29T01:38:44.310010+11:00",
+  "run_type": "morning",
   "soc": {
-    "pct": 78.0,
-    "kwh": 32.8,
+    "pct": 14.0,
+    "kwh": 5.9,
     "source": "live",
-    "live_pv_kw": 4.57,
-    "live_load_kw": 2.54,
-    "live_bat_kw": 9.97
+    "live_pv_kw": 0.0,
+    "live_load_kw": 0.43,
+    "live_bat_kw": -0.49
   },
   "export": {
-    "headroom_kwh": 26.8,
+    "headroom_kwh": 0,
     "reserve_kwh": 6.0,
-    "est_export_kwh": 20.0,
-    "est_earn": 9.0,
-    "fdpwr_w": 10000,
-    "bat_after_pct": 30.5,
-    "bat_after_kwh": 12.8,
-    "pv_bonus_kwh": 2.2,
-    "upside_earn": 9.0
+    "est_export_kwh": 0.0,
+    "est_earn": 0.0,
+    "fdpwr_w": 0,
+    "bat_after_pct": 14.0,
+    "bat_after_kwh": 5.9,
+    "pv_bonus_kwh": 6.4,
+    "upside_earn": 2.88
   },
   "yesterday": {
-    "date": "2026-11-27",
-    "gen_kwh": 60.2,
-    "load_kwh": 14.7,
-    "grid_kwh": 0.3,
-    "feedin_kwh": 18.23,
-    "earn": 8.2,
-    "cost": 0.1,
-    "net": 8.1,
-    "self_suff_pct": 98.0
+    "date": "2026-11-28",
+    "gen_kwh": 39.3,
+    "load_kwh": 12.8,
+    "grid_kwh": 4.0,
+    "feedin_kwh": 17.35,
+    "earn": 7.81,
+    "cost": 1.36,
+    "net": 6.45,
+    "self_suff_pct": 68.8
   },
   "today": {
-    "date": "2026-11-28",
-    "gen_kwh_so_far": 32.7
+    "date": "2026-11-29",
+    "gen_kwh_so_far": 0
   },
   "overnight": {
-    "load_kwh": 4.1,
-    "grid_kwh": 0.0,
+    "load_kwh": 2.0,
+    "grid_kwh": 0.1,
     "grid_free": true
   },
   "calibration": {
     "factor": 0.7,
     "days": 30,
-    "note": "Cal updated: 49.6\u219232.7 kWh (\u00d70.66), rolling \u00d70.70"
+    "note": "Cal \u00d70.70 (30d)"
   },
   "bom": {
     "today_icon": "storm",
-    "today_uv": 11,
-    "tmrw_icon": "storm",
-    "tmrw_rain": 70
+    "today_uv": 10,
+    "tmrw_icon": "shower",
+    "tmrw_rain": 40
   },
   "forecast": [
-    {
-      "date": "2026-11-29",
-      "label": "Sun 29 Nov",
-      "condition": "\u2600\ufe0f Sunny \ud83c\udf27",
-      "solar_kwh": 60.0,
-      "pv_window_kwh": 6.42,
-      "bat_earn_if_full": 9.0,
-      "max_earn_if_full": 9.0,
-      "cloud_pct": 13,
-      "rain_pct": 71,
-      "uv": 7.35,
-      "sunset": "19:50",
-      "source": "metno"
-    },
     {
       "date": "2026-11-30",
       "label": "Mon 30 Nov",
       "condition": "\ud83c\udf24 Mostly sunny",
-      "solar_kwh": 57.4,
-      "pv_window_kwh": 3.6,
+      "solar_kwh": 58.8,
+      "pv_window_kwh": 4.56,
       "bat_earn_if_full": 9.0,
       "max_earn_if_full": 9.0,
-      "cloud_pct": 27,
-      "rain_pct": 16,
-      "uv": 7.55,
+      "cloud_pct": 16,
+      "rain_pct": 12,
+      "uv": 9.1,
       "sunset": "19:51",
       "source": "metno"
     },
     {
       "date": "2026-12-01",
       "label": "Tue 1 Dec",
-      "condition": "\ud83c\udf25 Mostly cloudy",
-      "solar_kwh": 37.0,
-      "pv_window_kwh": 5.27,
+      "condition": "\u26c5 Partly cloudy",
+      "solar_kwh": 44.5,
+      "pv_window_kwh": 6.56,
       "bat_earn_if_full": 9.0,
       "max_earn_if_full": 9.0,
-      "cloud_pct": 65,
-      "rain_pct": 5,
+      "cloud_pct": 47,
+      "rain_pct": 1,
       "uv": 9.25,
       "sunset": "19:52",
       "source": "metno"
@@ -97,13 +83,13 @@
     {
       "date": "2026-12-02",
       "label": "Wed 2 Dec",
-      "condition": "\u2600\ufe0f Sunny",
-      "solar_kwh": 58.7,
-      "pv_window_kwh": 5.84,
+      "condition": "\ud83c\udf24 Mostly sunny",
+      "solar_kwh": 59.4,
+      "pv_window_kwh": 5.81,
       "bat_earn_if_full": 9.0,
       "max_earn_if_full": 9.0,
-      "cloud_pct": 14,
-      "rain_pct": 20,
+      "cloud_pct": 25,
+      "rain_pct": 18,
       "uv": 9.25,
       "sunset": "19:53",
       "source": "metno"
@@ -111,28 +97,28 @@
     {
       "date": "2026-12-03",
       "label": "Thu 3 Dec",
-      "condition": "\u26c5 Partly cloudy",
-      "solar_kwh": 58.2,
-      "pv_window_kwh": 5.84,
+      "condition": "\ud83c\udf24 Mostly sunny",
+      "solar_kwh": 60.0,
+      "pv_window_kwh": 6.05,
       "bat_earn_if_full": 9.0,
       "max_earn_if_full": 9.0,
-      "cloud_pct": 54,
-      "rain_pct": 16,
-      "uv": 7.95,
+      "cloud_pct": 17,
+      "rain_pct": 22,
+      "uv": 9.0,
       "sunset": "19:53",
       "source": "metno"
     },
     {
       "date": "2026-12-04",
       "label": "Fri 4 Dec",
-      "condition": "\u26c5 Partly cloudy",
-      "solar_kwh": 60.2,
-      "pv_window_kwh": 5.7,
+      "condition": "\ud83c\udf24 Mostly sunny",
+      "solar_kwh": 59.6,
+      "pv_window_kwh": 6.45,
       "bat_earn_if_full": 9.0,
       "max_earn_if_full": 9.0,
-      "cloud_pct": 51,
-      "rain_pct": 17,
-      "uv": 6.2,
+      "cloud_pct": 26,
+      "rain_pct": 12,
+      "uv": 9.8,
       "sunset": "19:54",
       "source": "metno"
     },
@@ -140,34 +126,40 @@
       "date": "2026-12-05",
       "label": "Sat 5 Dec",
       "condition": "\ud83c\udf24 Mostly sunny",
-      "solar_kwh": 51.8,
-      "pv_window_kwh": 5.28,
+      "solar_kwh": 56.7,
+      "pv_window_kwh": 5.99,
       "bat_earn_if_full": 9.0,
       "max_earn_if_full": 9.0,
-      "cloud_pct": 31,
-      "rain_pct": 40,
-      "uv": 9.6,
+      "cloud_pct": 15,
+      "rain_pct": 47,
+      "uv": 9.2,
       "sunset": "19:55",
+      "source": "metno"
+    },
+    {
+      "date": "2026-12-06",
+      "label": "Sun 6 Dec",
+      "condition": "\u2601\ufe0f Overcast",
+      "solar_kwh": 19.8,
+      "pv_window_kwh": 1.62,
+      "bat_earn_if_full": 9.0,
+      "max_earn_if_full": 9.0,
+      "cloud_pct": 100,
+      "rain_pct": 31,
+      "uv": 8.15,
+      "sunset": "19:56",
       "source": "metno"
     }
   ],
   "financials": {
-    "total_earned": 299.11,
-    "total_grid_cost": 33.26,
-    "net": 265.85,
+    "total_earned": 298.92,
+    "total_grid_cost": 34.62,
+    "net": 264.3,
     "days": 60
   },
   "season": "Late spring",
   "history": {
     "daily": [
-      {
-        "date": "2026-10-28",
-        "earn": 8.0,
-        "cost": 0.0,
-        "net": 8.0,
-        "gen_kwh": 72.4,
-        "feedin_kwh": 17.78
-      },
       {
         "date": "2026-10-29",
         "earn": 7.51,
@@ -639,33 +631,35 @@
         "net": 8.1,
         "gen_kwh": 60.2,
         "feedin_kwh": 18.23
+      },
+      {
+        "date": "2026-11-28",
+        "earn": 7.81,
+        "cost": 1.36,
+        "net": 6.45,
+        "gen_kwh": 39.3,
+        "feedin_kwh": 17.35
       }
     ],
     "monthly": [
       {
         "month": "2026-10",
-        "earn": 55.96,
+        "earn": 47.96,
         "cost": 0.2,
-        "net": 55.76,
-        "gen_kwh": 462.4,
-        "days": 7
+        "net": 47.76,
+        "gen_kwh": 389.9,
+        "days": 6
       },
       {
         "month": "2026-11",
-        "earn": 243.15,
-        "cost": 33.06,
-        "net": 210.09,
-        "gen_kwh": 2838.0,
-        "days": 53
+        "earn": 250.96,
+        "cost": 34.42,
+        "net": 216.54,
+        "gen_kwh": 2877.3,
+        "days": 54
       }
     ],
     "overnight": [
-      {
-        "date": "2026-10-28",
-        "consumption_kwh": 2.9,
-        "grid_used_kwh": 0.1,
-        "grid_free": true
-      },
       {
         "date": "2026-10-29",
         "consumption_kwh": 2.4,
@@ -1018,6 +1012,12 @@
         "date": "2026-11-27",
         "consumption_kwh": 4.1,
         "grid_used_kwh": 0.0,
+        "grid_free": true
+      },
+      {
+        "date": "2026-11-28",
+        "consumption_kwh": 2.0,
+        "grid_used_kwh": 0.1,
         "grid_free": true
       }
     ],
